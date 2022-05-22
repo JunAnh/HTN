@@ -9,12 +9,13 @@
 #define DHTTYPE DHT11 
 #define MoisturePIN A0 
 #define pumpPin 2 //D4
+
 //-----------Wifi-------
-const char* ssid = "Tio";//"Phuong Anh";
-const char* password = "24112001";// "phuonganh2001";
+const char* ssid = "Phuong Anh";//"Phuong Anh";
+const char* password = "phuonganh2001";// "phuonganh2001";
 
 //----------MQTT--------
-const char* mqtt_server = "192.168.43.254";   
+const char* mqtt_server = "192.168.2.15";   
 const uint16_t mqtt_port = 1883;
 
 //------------Khai báo biến------
@@ -32,8 +33,8 @@ float t;
 float h;
 
 //--------Threshold------------
-int moisThreshold = 70;
-float humidThreshold = 70;
+int moisThreshold = 50;
+float humidThreshold = 50;
 float minTempThreshold = 20;
 float maxTempThreshold = 25;
 
@@ -45,10 +46,10 @@ void setup() {
   setup_wifi(); //khởi động kết nối wifi
   client.setServer(mqtt_server, mqtt_port); // đặt server mqtt broker
   client.setCallback(callback); // đặt callback mqtt broker
+  pinMode(pumpPin, OUTPUT); // Khởi động chân tín hiệu điều khiển động cơ
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
   autoProcess();
   if (!client.connected()) {
     reconnect();
@@ -104,7 +105,7 @@ void autoProcess(){
 // -----------Read Sensors-------------
 int readMoisture(){
   int moisture = analogRead(MoisturePIN);
-  float m = (moisture * 100) / 1023;
+  float m = (moisture * 150) / 1023;
   return m;
 }
 
@@ -154,26 +155,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
     digitalWrite(pumpPin, LOW);
   }
   
-  // Set Threshold khi chọn Cà chua
-  if ((char)payload[0] == '2') {
-    Serial.println("CA CHUA");
-    moisThreshold = 70;
-    humidThreshold = 60;
-    minTempThreshold = 26;
-    maxTempThreshold = 29;
-  }
-
-  // Set Threshold khi chọn Dưa leo
-  if ((char)payload[0] == '3') {
-    Serial.println("DUA LEO");
-    moisThreshold = 85;
-    humidThreshold = 90;
-    minTempThreshold = 25;
-    maxTempThreshold = 30;
-  }
-
   // Set Threshold khi chọn Đậu cô-ve
-  if ((char)payload[0] == '5') {
+  if ((char)payload[0] == '3') {
     Serial.println("DAU COVE");
     moisThreshold = 70;
     humidThreshold = 65;
@@ -182,7 +165,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 
   // Set Threshold khi chọn Dâu tây
-  if ((char)payload[0] == '6') {
+  if ((char)payload[0] == '5') {
     Serial.println("DAU TAY");
     moisThreshold = 70;
     humidThreshold = 84;
@@ -190,7 +173,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     maxTempThreshold = 24;
   }
   // Set Threshold khi chọn Ớt
-  if ((char)payload[0] == '7') {
+  if ((char)payload[0] == '4') {
     Serial.println("OT");
     moisThreshold = 70;
     humidThreshold = 70;
