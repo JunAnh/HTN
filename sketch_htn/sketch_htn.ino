@@ -1,3 +1,9 @@
+//----Trường Đại học Công nghệ Thông tin-------
+//----Khoa Mạng máy tính và truyền thông-------
+//----Môn học: Hệ thống nhúng mạng không dây---
+//---------------NT131.M21---------------------
+//----------------Nhóm 10----------------------
+
 //---------Thư viện---------
 #include <DHT.h>
 #include <ESP8266WiFi.h>
