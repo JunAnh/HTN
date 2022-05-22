@@ -105,7 +105,9 @@ void autoProcess(){
 // -----------Read Sensors-------------
 int readMoisture(){
   int moisture = analogRead(MoisturePIN);
-  float m = (moisture * 150) / 1023;
+  float m = (moisture * 165) / 1023;
+  if (m > 100) 
+      m = 100;
   return m;
 }
 
@@ -147,11 +149,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println();
 
   if ((char)payload[0] == '1') {
-    Serial.println("Tưới");
+    Serial.println("Tuoi");
     tuoi();
   } 
   if ((char)payload[0] == '0') {
-    Serial.println("Ngừng");
+    Serial.println("Ngung");
     digitalWrite(pumpPin, LOW);
   }
   
@@ -163,15 +165,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     minTempThreshold = 20;
     maxTempThreshold = 25;
   }
-
-  // Set Threshold khi chọn Dâu tây
-  if ((char)payload[0] == '5') {
-    Serial.println("DAU TAY");
-    moisThreshold = 70;
-    humidThreshold = 84;
-    minTempThreshold = 15;
-    maxTempThreshold = 24;
-  }
+  
   // Set Threshold khi chọn Ớt
   if ((char)payload[0] == '4') {
     Serial.println("OT");
@@ -180,6 +174,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
     minTempThreshold = 25;
     maxTempThreshold = 28;
   }
+  // Set Threshold khi chọn Dâu tây
+  if ((char)payload[0] == '5') {
+    Serial.println("DAU TAY");
+    moisThreshold = 70;
+    humidThreshold = 84;
+    minTempThreshold = 15;
+    maxTempThreshold = 24;
+  }
+
 }
 
 //--------------Tưới cây-----------
@@ -199,8 +202,8 @@ void reconnect() {
 
     if (client.connect("ESP8266Client")) {
       Serial.println("connected");
-      // Khi kết nối thành công sẽ gửi chuỗi helloworld lên topic event
-      client.publish("event", "Hello World");
+      // Khi kết nối thành công sẽ gửi chuỗi hello lên topic event
+      client.publish("event", "Hello");
       // ... sau đó sub lại thông tin
       client.subscribe("event");
     } else {
